@@ -59,13 +59,16 @@ aws acm request-certificate \
     --validation-method DNS \
     --subject-alternative-names <optional-alternative-names> \
     --region <region>
+    --profile <your-sso-profile>
 ```
 
 ##### 12. Verify the certificate status and save the output to text file. We will need the ResourceRecord Name and Value to configure it on the DNS side
 ```
 aws acm describe-certificate \
     --certificate-arn <certificate-arn> \
-    --region <region> > certificate.txt
+    --region <region>
+    --profile <your-sso-profile>
+    > certificate.txt
 ```
     
 ##### 13. On CloudFlare, navigate to DNS page and add new CNAME record where NAME is ResourceRecord Name and TARGET is ResourceRecord Value. Trun of proxying, it should say "DNS only"
