@@ -1,13 +1,10 @@
 # Cloud Resume Challenge Solution 
 
-My approach to solving the Cloud Resume Challenge.
-
 ## Prerequisites 
 
 - Organizations configured
 - CloudFlare domain registered
 - Basic HTML & CSS template downloaded: https://css-tricks.com/examples/OnePageResume.zip
-
 
 ## Chunk 1 
 
@@ -30,10 +27,10 @@ My approach to solving the Cloud Resume Challenge.
 ```
 aws s3api put-public-access-block --bucket <bucket-name> --public-access-block-configuration "BlockPublicAcls=false,IgnorePublicAcls=false,BlockPublicPolicy=false,RestrictPublicBuckets=false" --profile <your-sso-profile>
 ```
-#### 7. Verify "Block all public access" settings
+##### 7. Verify "Block all public access" settings
 `aws s3api get-public-access-block --bucket <bucket-name> --profile <your-sso-profile>`
 
-#### 8. Create bucket policy json  
+##### 8. Create bucket policy json  
 ```
 echo '{
     "Version": "2012-10-17",
@@ -49,10 +46,10 @@ echo '{
 }' > bucket-policy.com
 ```
 
-#### 9. Set the bucket policy
+##### 9. Set the bucket policy
 `aws s3api put-bucket-policy --bucket <bucket-name> --policy file://bucket-policy.json --profile <your-sso-profile>`
 
-#### 10. Verify that static page is accessible
+##### 10. Verify that static page is accessible
 `curl -o /dev/null -s -w "%{http_code}\n" http://<bucket-name>.s3-website.<bucket-region>.amazonaws.com`
 
 ##### 11. Request ACM certificate for your domain. Note down the CertificateArn after making the request
@@ -71,5 +68,18 @@ aws acm describe-certificate \
     --region <region> > certificate.txt
 ```
     
-##### 13. On CloudFront, navigate to DNS page and add new CNAME record where NAME is ResourceRecord Name and TARGET is ResourceRecord Value. Trun of proxying, it should say "DNS only". 
+##### 13. On CloudFlare, navigate to DNS page and add new CNAME record where NAME is ResourceRecord Name and TARGET is ResourceRecord Value. Trun of proxying, it should say "DNS only"
+
 ##### 14. Check the ACM certificate status again after a few minutes, validation status should change to "SUCCSESS"
+
+##### 15. Create CloudFront distribution
+
+```
+
+
+> cloudfront-config.json
+```
+
+##### 16. Verify CloudFront distribution domain is accessible
+
+##### 17. On CloudFlare, navigate to DNS page and add new CNAME record where NAME is @ (root) and TARGET is your CloudFront distribution domain
