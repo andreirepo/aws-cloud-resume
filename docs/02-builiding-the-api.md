@@ -53,8 +53,42 @@ $Env:RESOURCEID = aws apigateway create-resource --rest-api-id $Env:APIID --pare
 aws apigateway put-method --rest-api-id $Env:APIID --resource-id $Env:RESOURCEID --http-method GET --authorization-type "NONE" --region $Env:REGION --profile $Env:SSO_PROFILE
 ```
 
-
 #### 8. Create an HTTP POST Method
 ```shell
 aws apigateway put-method --rest-api-id $Env:APIID --resource-id $Env:RESOURCEID --http-method POST --authorization-type "NONE" --region $Env:REGION --profile $Env:SSO_PROFILE
+```
+
+#### 9. Create an IAM policy for the lambda function to access DynamoDB
+```shell
+echo '{
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Effect": "Allow",
+            "Action": [
+                "dynamodb:UpdateItem",
+                "dynamodb:GetItem"
+            ],
+            "Resource": "arn:aws:dynamodb:REGION:ACCOUNT_ID:table/YOUR_TABLE_NAME"
+        }
+    ]
+}' > lambda-iam-policy.json
+```
+
+#### 10. Create an IAM policy for the lambda function to access DynamoDB
+```shell
+aws iam create-role --role-name LambdaDynamoDBGetUpdate --assume-role-policy-document file://lambda-iam-policy.json
+```
+
+#### 11. Compress the lambda function
+```shell
+Compress-Archive -Path lambda_function.py -DestinationPath function.zip  
+```
+
+#### 12. Create the lambda function 
+```shell
+aws lambda create-function --function-name CloudResumeVisitCounter `
+    --zip-file fileb://function.zip --handler lambda_function.lambda_handler `
+    --runtime python3.8 --role arn:aws:iam::123456789012:role/YourLambdaExecutionRole `
+    --profile $Env:SSO_PROFILE
 ```
